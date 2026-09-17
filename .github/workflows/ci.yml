@@ -47,7 +47,7 @@ jobs:
       CELERY_BROKER_URL: redis://localhost:6379/1
       CELERY_RESULT_BACKEND: redis://localhost:6379/2
       JWT_SECRET: ci-secret-key-that-is-longer-than-32-characters
-      BOOTSTRAP_SUPERADMIN_EMAIL: admin@campusos.local
+      BOOTSTRAP_SUPERADMIN_EMAIL: admin@campusos.io
       BOOTSTRAP_SUPERADMIN_PASSWORD: integration-admin-password
     steps:
       - name: Checkout
