@@ -1,5 +1,7 @@
 # CampusOS
 
+[![CampusOS CI](https://github.com/MridulJain0771/Gold-Price-Analysis/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MridulJain0771/Gold-Price-Analysis/actions/workflows/ci.yml)
+
 **Multi-tenant school management platform for academics, classes, students, staff, fees, IDs, attendance, community and administration.**
 
 CampusOS models a real school as a tenant with role-based users and strict school-scoped data. It is designed as a portfolio-grade SaaS backend rather than a basic student CRUD app.
