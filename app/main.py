@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from redis.asyncio import Redis
 
-from app.api.routes import academics, attendance, auth, community, dashboard, fees, health, notifications, people, schools
+from app.api.routes import academics, attendance, auth, community, dashboard, fees, finance, health, lifecycle, notifications, people, reports, schools
 from app.core.config import settings
 from app.db.session import engine
 from app.services.bootstrap import bootstrap_superadmin
@@ -40,6 +40,9 @@ app.include_router(schools.router, prefix="/api/v1")
 app.include_router(people.router, prefix="/api/v1")
 app.include_router(academics.router, prefix="/api/v1")
 app.include_router(fees.router, prefix="/api/v1")
+app.include_router(finance.router, prefix="/api/v1")
+app.include_router(lifecycle.router, prefix="/api/v1")
+app.include_router(reports.router, prefix="/api/v1")
 app.include_router(attendance.router, prefix="/api/v1")
 app.include_router(community.router, prefix="/api/v1")
 app.include_router(dashboard.router, prefix="/api/v1")
@@ -53,5 +56,20 @@ async def root() -> dict:
         "name": "CampusOS API",
         "docs": "/docs",
         "health": "/health/live",
-        "modules": ["schools", "users", "students", "staff", "classes", "fees", "attendance", "community", "notifications"],
+        "modules": [
+            "schools",
+            "users",
+            "students",
+            "staff",
+            "classes",
+            "fees",
+            "payroll",
+            "expenses",
+            "exams",
+            "documents",
+            "lifecycle",
+            "attendance",
+            "community",
+            "notifications",
+        ],
     }
