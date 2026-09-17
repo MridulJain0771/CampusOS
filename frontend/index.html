@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CampusOS Admin</title>
+  <style>
+    :root{font-family:Inter,system-ui,sans-serif;color:#172033;background:#f5f7fb}body{margin:0}header{background:#fff;border-bottom:1px solid #e6e9f0;padding:18px 28px;display:flex;justify-content:space-between}main{max-width:1100px;margin:36px auto;padding:0 20px}.card{background:#fff;border:1px solid #e6e9f0;border-radius:14px;padding:20px;box-shadow:0 8px 30px rgba(20,30,55,.04)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:20px 0}.metric strong{display:block;font-size:30px;margin-top:8px}input,button{padding:11px 12px;border-radius:9px;border:1px solid #ccd2df;font:inherit}button{cursor:pointer;background:#172033;color:white;border-color:#172033}.row{display:flex;gap:10px;flex-wrap:wrap}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px;border-bottom:1px solid #eef0f5}.muted{color:#6d7485}
+  </style>
+</head>
+<body>
+<header><strong>CampusOS</strong><span class="muted">School Admin Console</span></header>
+<main>
+  <section class="card">
+    <h2>Admin login</h2>
+    <div class="row"><input id="email" value="admin@campusos.local" placeholder="Email"/><input id="password" type="password" placeholder="Password"/><button onclick="login()">Sign in</button></div>
+    <p id="status" class="muted">Use a school-admin/accountant/staff account for dashboard data.</p>
+  </section>
+  <section id="app" style="display:none">
+    <div class="grid"><div class="card metric">Students<strong id="students">–</strong></div><div class="card metric">Staff<strong id="staff">–</strong></div><div class="card metric">Class sections<strong id="sections">–</strong></div><div class="card metric">Outstanding fees<strong id="outstanding">–</strong></div></div>
+    <div class="card"><h3>Classes</h3><table><thead><tr><th>Grade</th><th>Section</th><th>Classroom</th><th>Class teacher</th></tr></thead><tbody id="classRows"></tbody></table></div>
+  </section>
+</main>
+<script>
+const api=location.origin+'/api/v1';
+async function login(){const r=await fetch(api+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.value,password:password.value})});if(!r.ok){status.textContent='Login failed';return}const d=await r.json();localStorage.setItem('campus_token',d.access_token);status.textContent='Signed in';load()}
+async function get(path){const token=localStorage.getItem('campus_token');const r=await fetch(api+path,{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function load(){try{const d=await get('/dashboard');students.textContent=d.students;staff.textContent=d.staff;sections.textContent=d.class_sections;outstanding.textContent='₹'+Number(d.fees.outstanding).toLocaleString('en-IN');const c=await get('/academics/sections');classRows.innerHTML=c.map(x=>`<tr><td>${x.grade_name}</td><td>${x.section_name}</td><td>${x.classroom_id??'—'}</td><td>${x.class_teacher_staff_id??'—'}</td></tr>`).join('');document.getElementById('app').style.display='block'}catch(e){status.textContent='Dashboard access requires a school role.'}}
+if(localStorage.getItem('campus_token'))load();
+</script>
+</body>
+</html>
