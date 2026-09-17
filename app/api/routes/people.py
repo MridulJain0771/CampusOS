@@ -1,3 +1,4 @@
+from datetime import date
 from io import BytesIO
 from uuid import uuid4
 
@@ -9,6 +10,7 @@ from sqlalchemy import select
 from app.api.deps import DbSession, require_roles, school_id_for
 from app.models.core import User
 from app.models.enums import Role
+from app.models.operations import LifecycleEvent
 from app.models.people import IdentityCard, Parent, Staff, Student, StudentParent
 from app.schemas.people import IdCardCreate, LinkParentRequest, ParentCreate, StaffCreate, StudentCreate
 from app.services.audit import audit
@@ -43,6 +45,16 @@ async def create_student(
     student = Student(school_id=school_id, **payload.model_dump())
     db.add(student)
     await db.flush()
+    db.add(
+        LifecycleEvent(
+            school_id=school_id,
+            entity_type="student",
+            entity_id=student.id,
+            event_type="admitted",
+            effective_on=student.joined_on or date.today(),
+            actor_user_id=actor.id,
+        )
+    )
     await audit(db, actor, "student.create", "student", student.id, {"admission_no": student.admission_no})
     await db.commit()
     return student_dict(student)
@@ -69,6 +81,16 @@ async def create_staff(
     staff = Staff(school_id=school_id, **payload.model_dump())
     db.add(staff)
     await db.flush()
+    db.add(
+        LifecycleEvent(
+            school_id=school_id,
+            entity_type="staff",
+            entity_id=staff.id,
+            event_type="joined",
+            effective_on=staff.joined_on or date.today(),
+            actor_user_id=actor.id,
+        )
+    )
     await audit(db, actor, "staff.create", "staff", staff.id, {"employee_no": staff.employee_no})
     await db.commit()
     return {
