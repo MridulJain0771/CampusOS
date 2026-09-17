@@ -10,9 +10,10 @@ flowchart TD
     School --> Users[Users + RBAC]
     School --> People[Students / Parents / Staff]
     School --> Academics[Academic Years / Classes / Rooms / Subjects]
-    School --> Finance[Fee Structures / Invoices / Payments / Refunds]
+    School --> Finance[Fees / Payroll / Expenses]
+    School --> Reports[Exams / Scores / Report Cards / Documents]
     School --> Community[Posts / Announcements / Events]
-    School --> Ops[Attendance / Notifications / Audit Logs]
+    School --> Ops[Lifecycle / Attendance / Notifications / Audit Logs]
 
     Academics --> Section[Class Section]
     Section --> Room[Classroom]
@@ -39,8 +40,8 @@ This supports questions such as:
 
 - `super_admin`: manages schools/tenants.
 - `school_admin`: manages one school.
-- `accountant`: fee operations and finance views.
-- `teacher`: academic/community/attendance access.
+- `accountant`: fee, payroll and expenditure operations.
+- `teacher`: academic/report/community/attendance access.
 - `staff`: school operations.
 - `student`: student-facing access.
 - `parent`: guardian-facing access.
@@ -60,6 +61,22 @@ flowchart LR
 
 Payments use an `Idempotency-Key` unique inside the school so network retries do not create duplicate financial records. Invoice payment state moves through `open -> partial -> paid`. Refunds reduce the paid amount and reopen the invoice state when necessary.
 
+## Lifecycle management
+
+`LifecycleEvent` preserves admission, joining, withdrawal, termination, readmission and rehire history instead of overwriting why someone became inactive. `Student.is_active` and `Staff.is_active` stay as the fast current-state flags. Student withdrawal also deactivates active class enrollments and student ID cards; staff termination deactivates account access and staff ID cards.
+
+## Documents and academic reports
+
+`DocumentRecord` stores metadata and an object-storage reference instead of binary documents in PostgreSQL. Records can belong to the school, a student or a staff member and can be marked important with issue/expiry dates.
+
+`ExamScore` is unique per exam, student and subject. Report cards are calculated from subject scores, then `ReportCard` stores a publish-time snapshot with total marks, percentage, overall grade and teacher remarks. This prevents later salary or score workflow changes from silently rewriting historical published reports.
+
+## Payroll and expenditure
+
+`SalaryStructure` is effective-dated so salary revisions preserve history. A monthly `PayrollRun` creates `PayrollItem` snapshots for active staff, keeping the exact basic salary, allowances, deductions, gross and net values used in that month. Payments store method/reference and paid timestamp.
+
+`ExpenseCategory` and `Expense` track non-payroll expenditure such as utilities, maintenance, events or supplies. The finance summary combines net fee collections, payroll paid and other paid expenditure into a simple operating view.
+
 ## Reliability and operations
 
 - PostgreSQL is the source of truth.
@@ -73,4 +90,4 @@ Payments use an `Idempotency-Key` unique inside the school so network retries do
 
 ## Production extensions
 
-A larger deployment could add S3-backed document/photo storage, payment-gateway webhooks, SMS/email providers, row-level security, per-tenant database strategies, observability with OpenTelemetry, admissions workflow, examination/report cards, transport/hostel modules and payroll.
+A larger deployment could add direct S3 upload/presigned URLs, payment-gateway webhooks, SMS/email providers, row-level security, per-tenant database strategies, OpenTelemetry, transport/hostel modules and statutory payroll/tax integrations.
