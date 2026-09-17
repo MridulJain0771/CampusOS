@@ -1,4 +1,5 @@
 import uuid
+from decimal import Decimal
 
 import pytest
 from fastapi.testclient import TestClient
@@ -12,7 +13,7 @@ def test_school_class_and_fee_workflow():
     with TestClient(app) as client:
         super_login = client.post(
             "/api/v1/auth/login",
-            json={"email": "admin@campusos.local", "password": "integration-admin-password"},
+            json={"email": "admin@campusos.io", "password": "integration-admin-password"},
         )
         assert super_login.status_code == 200
         super_headers = {"Authorization": f"Bearer {super_login.json()['access_token']}"}
@@ -129,7 +130,7 @@ def test_school_class_and_fee_workflow():
         )
         assert invoice.status_code == 201
         invoice_id = invoice.json()["id"]
-        assert invoice.json()["total_amount"] == "40500.00"
+        assert Decimal(str(invoice.json()["total_amount"])) == Decimal("40500.00")
 
         payment_headers = {**headers, "Idempotency-Key": f"pay-{suffix}"}
         payment = client.post(
@@ -149,4 +150,4 @@ def test_school_class_and_fee_workflow():
 
         ledger = client.get(f"/api/v1/fees/students/{student_id}/ledger", headers=headers)
         assert ledger.status_code == 200
-        assert ledger.json()["outstanding"] == "20500.00"
+        assert Decimal(str(ledger.json()["outstanding"])) == Decimal("20500.00")
