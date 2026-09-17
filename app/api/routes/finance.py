@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -272,7 +272,7 @@ async def pay_staff_salary(
             "replay": True,
         }
     item.status = "paid"
-    item.paid_at = datetime.now(timezone.utc)
+    item.paid_at = datetime.now(UTC)
     item.payment_method = payload.payment_method
     item.payment_reference = payload.payment_reference
     await db.flush()
