@@ -22,7 +22,8 @@
   </section>
 </main>
 <script>
-const api=location.origin+'/api/v1';
+const params=new URLSearchParams(location.search);
+const api=params.get('api')||(location.pathname.startsWith('/admin-ui')?location.origin+'/api/v1':'http://localhost:8000/api/v1');
 async function login(){const r=await fetch(api+'/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email.value,password:password.value})});if(!r.ok){status.textContent='Login failed';return}const d=await r.json();localStorage.setItem('campus_token',d.access_token);status.textContent='Signed in';load()}
 async function get(path){const token=localStorage.getItem('campus_token');const r=await fetch(api+path,{headers:{Authorization:'Bearer '+token}});if(!r.ok)throw new Error(await r.text());return r.json()}
 async function load(){try{const d=await get('/dashboard');students.textContent=d.students;staff.textContent=d.staff;sections.textContent=d.class_sections;outstanding.textContent='₹'+Number(d.fees.outstanding).toLocaleString('en-IN');const c=await get('/academics/sections');classRows.innerHTML=c.map(x=>`<tr><td>${x.grade_name}</td><td>${x.section_name}</td><td>${x.classroom_id??'—'}</td><td>${x.class_teacher_staff_id??'—'}</td></tr>`).join('');document.getElementById('app').style.display='block'}catch(e){status.textContent='Dashboard access requires a school role.'}}
