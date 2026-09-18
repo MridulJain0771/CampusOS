@@ -4,16 +4,22 @@ from decimal import Decimal
 import pytest
 from fastapi.testclient import TestClient
 
+from app.core.config import settings
 from app.main import app
 
 
 @pytest.mark.integration
 def test_school_class_and_fee_workflow():
     suffix = uuid.uuid4().hex[:8]
+    assert settings.bootstrap_superadmin_email
+    assert settings.bootstrap_superadmin_password
     with TestClient(app) as client:
         super_login = client.post(
             "/api/v1/auth/login",
-            json={"email": "admin@campusos.io", "password": "integration-admin-password"},
+            json={
+                "email": settings.bootstrap_superadmin_email,
+                "password": settings.bootstrap_superadmin_password,
+            },
         )
         assert super_login.status_code == 200
         super_headers = {"Authorization": f"Bearer {super_login.json()['access_token']}"}
