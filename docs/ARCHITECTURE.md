@@ -1,5 +1,13 @@
 # CampusOS Architecture
 
+## Design document map
+
+- [High-Level Design (HLD)](HLD.md)
+- [Low-Level Design (LLD)](LLD.md)
+- [Code Flow](CODE_FLOW.md)
+- [Diagram Catalog](DIAGRAMS.md)
+- [Local Development Without Docker](LOCAL_DEVELOPMENT.md)
+
 CampusOS is designed as a multi-tenant school-management SaaS. Every school-scoped record carries `school_id`, and API queries derive the tenant from the authenticated user instead of accepting an arbitrary tenant from the client.
 
 ## Domain model
