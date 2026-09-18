@@ -108,7 +108,16 @@ flowchart LR
     API --> UI[Admin UI]
 ```
 
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the domain model and design decisions.
+Detailed design documentation:
+
+| Document | Purpose |
+|---|---|
+| [Architecture Overview](docs/ARCHITECTURE.md) | Domain model and key design decisions |
+| [High-Level Design (HLD)](docs/HLD.md) | System context, components, tenancy, security and scaling |
+| [Low-Level Design (LLD)](docs/LLD.md) | Packages, models, constraints and module-level design |
+| [Code Flow](docs/CODE_FLOW.md) | Request-by-request execution flows |
+| [Diagram Catalog](docs/DIAGRAMS.md) | System, ER, sequence, lifecycle, finance and CI diagrams |
+| [Run Without Docker](docs/LOCAL_DEVELOPMENT.md) | PostgreSQL + Redis + backend + frontend + worker + tests locally |
 
 ## Main API areas
 
@@ -135,15 +144,48 @@ Interactive OpenAPI documentation is available at `/docs`.
 
 ## Run locally
 
+### Option A — Docker Compose
+
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
+### Option B — without Docker
+
+Run PostgreSQL and Redis locally, then:
+
+```bash
+python -m venv .venv
+# activate .venv
+pip install -r requirements-dev.txt
+cp .env.example .env
+alembic upgrade head
+uvicorn app.main:app --reload --port 8000
+```
+
+Start the worker in another terminal:
+
+```bash
+celery -A app.workers.celery_app.celery_app worker --loglevel=INFO
+```
+
+Serve the frontend separately in another terminal:
+
+```bash
+cd frontend
+python -m http.server 5173
+```
+
+The standalone frontend automatically calls the backend at `http://localhost:8000/api/v1`.
+
+Full Windows/macOS/Linux setup, PostgreSQL/Redis commands, test-database guidance and troubleshooting are in **[Run Without Docker](docs/LOCAL_DEVELOPMENT.md)**.
+
 Open:
 
 - API docs: `http://localhost:8000/docs`
-- Admin UI: `http://localhost:8000/admin-ui/`
+- Separate frontend: `http://localhost:5173`
+- Backend-served UI: `http://localhost:8000/admin-ui/`
 - Liveness: `http://localhost:8000/health/live`
 - Readiness: `http://localhost:8000/health/ready`
 
