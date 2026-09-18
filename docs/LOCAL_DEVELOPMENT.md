@@ -16,7 +16,7 @@ Docker is not required.
 
 Install:
 
-- Python 3.12
+- Python 3.12 or 3.14 (both are validated in CI)
 - PostgreSQL 16
 - Redis 7 or a Redis-compatible local server
 - Git
@@ -31,6 +31,8 @@ redis-cli ping
 
 `redis-cli ping` should return `PONG`.
 
+> Python 3.14 note: CampusOS uses `asyncpg==0.31.0`, which supports Python 3.14. Older `asyncpg==0.30.0` builds may fall back to source compilation and fail on Python 3.14.
+
 ## 1. Clone and create the Python environment
 
 ```bash
@@ -41,7 +43,7 @@ cd CampusOS
 ### Windows PowerShell
 
 ```powershell
-py -3.12 -m venv .venv
+py -3.14 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
@@ -50,7 +52,7 @@ pip install -r requirements-dev.txt
 ### macOS / Linux
 
 ```bash
-python3.12 -m venv .venv
+python3.14 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements-dev.txt
