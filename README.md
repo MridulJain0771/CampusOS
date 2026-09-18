@@ -203,8 +203,8 @@ The integration suite covers the core school/class/fee flow and the extended lif
 
 ## CI
 
-GitHub Actions runs on pushes and pull requests and checks dependencies, Python compilation, Ruff, a fresh PostgreSQL migration, unit tests, integration tests, Docker build and non-root container execution.
+GitHub Actions runs on pushes and pull requests and validates the application on Python 3.12 and Python 3.14, including dependencies, compilation, Ruff, a fresh PostgreSQL migration, unit tests and integration tests. A separate job validates the Docker image and non-root runtime.
 
 ## Tech
 
-Python 3.12 · FastAPI · PostgreSQL · SQLAlchemy 2.0 async · Alembic · Redis · Celery · JWT · Docker · Pytest · GitHub Actions
+Python 3.12 / 3.14 · FastAPI · PostgreSQL · SQLAlchemy 2.0 async · Alembic · Redis · Celery · JWT · Docker · Pytest · GitHub Actions
