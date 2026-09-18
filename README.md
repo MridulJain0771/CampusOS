@@ -1,6 +1,6 @@
 # CampusOS
 
-[![CampusOS CI](https://github.com/MridulJain0771/Gold-Price-Analysis/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MridulJain0771/Gold-Price-Analysis/actions/workflows/ci.yml)
+[![CampusOS CI](https://github.com/MridulJain0771/CampusOS/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/MridulJain0771/CampusOS/actions/workflows/ci.yml)
 
 **Multi-tenant school management platform for academics, classes, students, staff, fees, IDs, attendance, community, reports, payroll and administration.**
 
