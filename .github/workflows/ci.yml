@@ -15,9 +15,13 @@ concurrency:
 
 jobs:
   test:
-    name: Lint, migrate and test
+    name: Python ${{ matrix.python-version }} - lint, migrate and test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.14"]
     services:
       postgres:
         image: postgres:16-alpine
@@ -52,10 +56,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Python 3.12
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install dependencies
         run: |
